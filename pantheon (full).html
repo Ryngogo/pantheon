@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Flashcards</title>
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .file-input {
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .grid-container {
+            width: 100%;
+            height: calc(100vh - 150px); /* Subtract header space */
+            overflow: auto;
+        }
+        
+        .grid {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(230px, 1fr);
+            width: 100%;
+            height: 100%;
+            gap: 15px;
+        }
+        
+        .card-container {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+        
+        .card-number {
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+            width: 25px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            perspective: 1000px;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-front {
+            background-color: #222;
+        }
+        
+        .card-back {
+            background-color: #fff;
+            transform: rotateY(180deg);
+            border: 2px solid #ddd;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            word-break: break-word;
+        }
+        
+        .name {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .instructions {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Name Flashcards</h1>
+        
+        <div class="file-input">
+            <input type="file" id="nameFile" accept=".txt">
+            <button id="loadNames">Load Names</button>
+        </div>
+        
+        <p class="instructions">Upload a .txt file with one name per line. Click on a card to flip it.</p>
+        
+        <div class="grid-container">
+            <div id="flashcardGrid" class="grid"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loadNames').addEventListener('click', function() {
+            const fileInput = document.getElementById('nameFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a text file first.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const contents = e.target.result;
+                const names = contents.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+                
+                createFlashcards(names);
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        function createFlashcards(names) {
+            const grid = document.getElementById('flashcardGrid');
+            grid.innerHTML = '';
+            
+            // Calculate the optimal number of rows
+            const gridContainer = document.querySelector('.grid-container');
+            const containerHeight = gridContainer.clientHeight;
+            const estimatedCardHeight = 120; // Card height + margins
+            const numRows = Math.floor(containerHeight / estimatedCardHeight);
+            
+            // Calculate how many columns we need
+            const numColumns = Math.ceil(names.length / numRows);
+            
+            // Set the grid template
+            grid.style.gridTemplateRows = `repeat(${numRows}, 1fr)`;
+            grid.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+            
+            names.forEach((name, index) => {
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'card-container';
+                
+                const cardNumber = document.createElement('div');
+                cardNumber.className = 'card-number';
+                cardNumber.textContent = (index + 1) + '.';
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+                
+                const cardInner = document.createElement('div');
+                cardInner.className = 'card-inner';
+                
+                const cardFront = document.createElement('div');
+                cardFront.className = 'card-front';
+                
+                const cardBack = document.createElement('div');
+                cardBack.className = 'card-back';
+                
+                const nameElement = document.createElement('div');
+                nameElement.className = 'name';
+                nameElement.textContent = name;
+                
+                cardBack.appendChild(nameElement);
+                cardInner.appendChild(cardFront);
+                cardInner.appendChild(cardBack);
+                card.appendChild(cardInner);
+                
+                cardContainer.appendChild(cardNumber);
+                cardContainer.appendChild(card);
+                
+                grid.appendChild(cardContainer);
+            });
+            
+            // Ensure the grid items are ordered by column
+            const gridItems = grid.querySelectorAll('.card-container');
+            const sortedItems = Array.from(gridItems).sort((a, b) => {
+                const aIndex = Array.from(gridItems).indexOf(a);
+                const bIndex = Array.from(gridItems).indexOf(b);
+                
+                const aCol = Math.floor(aIndex / numRows);
+                const aRow = aIndex % numRows;
+                
+                const bCol = Math.floor(bIndex / numRows);
+                const bRow = bIndex % numRows;
+                
+                // First sort by column, then by row
+                if (aCol !== bCol) return aCol - bCol;
+                return aRow - bRow;
+            });
+            
+            // Remove all items from grid
+            grid.innerHTML = '';
+            
+            // Add items back in sorted order
+            sortedItems.forEach(item => {
+                grid.appendChild(item);
+            });
+        }
+        
+        // Add resize handler to recalculate grid when window size changes
+        window.addEventListener('resize', function() {
+            const fileInput = document.getElementById('nameFile');
+            if (fileInput.files[0]) {
+                // Reload the grid if we have a file
+                document.getElementById('loadNames').click();
+            }
+        });
+    </script>
+</body>
+</html>
