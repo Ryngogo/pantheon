@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantheon!</title>
+    <style>
+        body, html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-container:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .file-input {
+            margin: 25px 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 2px dashed #ced4da;
+            width: 80%;
+            max-width: 320px;
+        }
+        
+        .file-input-label:hover {
+            background-color: #dee2e6;
+            border-color: #adb5bd;
+        }
+        
+        .file-input-label span {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        #nameFile {
+            display: none;
+        }
+        
+        #loadNames {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        #loadNames:hover {
+            background-color: #2980b9;
+        }
+        
+        #loadNames:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .instructions {
+            text-align: center;
+            margin: 20px 0;
+            color: #6c757d;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        
+        .flashcard-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .grid-container {
+            width: 100%;
+            height: calc(100vh - 150px); /* Subtract header space */
+            overflow: auto;
+            display: none; /* Initially hidden */
+        }
+        
+        .grid {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(230px, 1fr);
+            width: 100%;
+            height: 100%;
+            gap: 15px;
+        }
+        
+        .card-container {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+        
+        .card-number {
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+            width: 25px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            perspective: 1000px;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-front {
+            background-color: #6b0404;
+            background-image: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .card-back {
+            background-color: #fff;
+            transform: rotateY(180deg);
+            border: 2px solid #e0e0e0;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            word-break: break-word;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .name {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+            z-index: 100;
+        }
+        
+        .back-button:hover {
+            background-color: #e9ecef;
+        }
+        
+        /* Example flashcards in the upload screen */
+        .example-cards {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .example-card {
+            width: 80px;
+            height: 100px;
+            background-color: #3498db;
+            border-radius: 8px;
+            margin: 0 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transform: rotate(0deg);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .example-card:nth-child(1) {
+            background-image: linear-gradient(135deg, #3498db, #2980b9);
+            transform: rotate(-5deg);
+            z-index: 1;
+        }
+        
+        .example-card:nth-child(2) {
+            background-image: linear-gradient(135deg, #2ecc71, #27ae60);
+            z-index: 2;
+        }
+        
+        .example-card:nth-child(3) {
+            background-image: linear-gradient(135deg, #e74c3c, #c0392b);
+            transform: rotate(5deg);
+            z-index: 1;
+        }
+        
+        .example-card:hover {
+            transform: translateY(-10px) rotate(0deg);
+        }
+        
+        .file-info {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9f7fe;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .file-info strong {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pantheon!</h1>
+        
+        <div id="uploadScreen" class="upload-container">
+            <div class="flashcard-icon">🌐</div>
+            <h2>Upload your list!</h2>
+            
+            <div class="example-cards">
+                <div class="example-card"></div>
+                <div class="example-card"></div>
+                <div class="example-card"></div>
+            </div>
+            
+            <div class="file-input">
+                <label for="nameFile" class="file-input-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Choose a text file
+                    <span>One name per line (.txt)</span>
+                </label>
+                <input type="file" id="nameFile" accept=".txt">
+                <div id="fileName" class="file-name"></div>
+                <div id="fileInfo" class="file-info"></div>
+            </div>
+            
+            <button id="loadNames" disabled>Create Flashcards</button>
+            
+            <p class="instructions">Upload a text file with one name per line to create interactive flashcards.<br>Perfect for studying, memorization, or learning names!</p>
+        </div>
+        
+        <button id="backButton" class="back-button">← Back to Upload</button>
+        
+        <div class="grid-container">
+            <div id="flashcardGrid" class="grid"></div>
+        </div>
+    </div>
+
+    <script>
+        const nameFileInput = document.getElementById('nameFile');
+        const loadNamesButton = document.getElementById('loadNames');
+        const fileNameDisplay = document.getElementById('fileName');
+        const fileInfoDisplay = document.getElementById('fileInfo');
+        const uploadScreen = document.getElementById('uploadScreen');
+        const gridContainer = document.querySelector('.grid-container');
+        const backButton = document.getElementById('backButton');
+        
+        // Handle file selection
+        nameFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            
+            if (file) {
+                fileNameDisplay.textContent = file.name;
+                loadNamesButton.disabled = false;
+                
+                // Read file to display preview info
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const contents = e.target.result;
+                    const names = contents.split('\n')
+                        .map(name => name.trim())
+                        .filter(name => name.length > 0);
+                    
+                    fileInfoDisplay.innerHTML = `<strong>${names.length}</strong> names found in file`;
+                    fileInfoDisplay.style.display = 'block';
+                };
+                reader.readAsText(file);
+            } else {
+                fileNameDisplay.textContent = '';
+                fileInfoDisplay.style.display = 'none';
+                loadNamesButton.disabled = true;
+            }
+        });
+        
+        // Load names and create flashcards
+        loadNamesButton.addEventListener('click', function() {
+            const file = nameFileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a text file first.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const contents = e.target.result;
+                const names = contents.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+                
+                if (names.length === 0) {
+                    alert('No names found in the file. Please check your file and try again.');
+                    return;
+                }
+                
+                // Switch to flashcard view
+                uploadScreen.style.display = 'none';
+                gridContainer.style.display = 'block';
+                backButton.style.display = 'block';
+                
+                createFlashcards(names);
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        // Back button functionality
+        backButton.addEventListener('click', function() {
+            uploadScreen.style.display = 'block';
+            gridContainer.style.display = 'none';
+            backButton.style.display = 'none';
+        });
+        
+        function createFlashcards(names) {
+            const grid = document.getElementById('flashcardGrid');
+            grid.innerHTML = '';
+            
+            // Calculate the optimal number of rows
+            const containerHeight = gridContainer.clientHeight;
+            const estimatedCardHeight = 120; // Card height + margins
+            const numRows = Math.floor(containerHeight / estimatedCardHeight);
+            
+            // Calculate how many columns we need
+            const numColumns = Math.ceil(names.length / numRows);
+            
+            // Set the grid template
+            grid.style.gridTemplateRows = `repeat(${numRows}, 1fr)`;
+            grid.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+            
+            names.forEach((name, index) => {
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'card-container';
+                
+                const cardNumber = document.createElement('div');
+                cardNumber.className = 'card-number';
+                cardNumber.textContent = (index + 1) + '.';
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.addEventListener('click', function() {
+                    this.classList.toggle('flipped');
+                });
+                
+                const cardInner = document.createElement('div');
+                cardInner.className = 'card-inner';
+                
+                const cardFront = document.createElement('div');
+                cardFront.className = 'card-front';
+                cardFront.textContent = '';
+                
+                const cardBack = document.createElement('div');
+                cardBack.className = 'card-back';
+                
+                const nameElement = document.createElement('div');
+                nameElement.className = 'name';
+                nameElement.textContent = name;
+                
+                cardBack.appendChild(nameElement);
+                cardInner.appendChild(cardFront);
+                cardInner.appendChild(cardBack);
+                card.appendChild(cardInner);
+                
+                cardContainer.appendChild(cardNumber);
+                cardContainer.appendChild(card);
+                
+                grid.appendChild(cardContainer);
+            });
+            
+            // Ensure the grid items are ordered by column
+            const gridItems = grid.querySelectorAll('.card-container');
+            const sortedItems = Array.from(gridItems).sort((a, b) => {
+                const aIndex = Array.from(gridItems).indexOf(a);
+                const bIndex = Array.from(gridItems).indexOf(b);
+                
+                const aCol = Math.floor(aIndex / numRows);
+                const aRow = aIndex % numRows;
+                
+                const bCol = Math.floor(bIndex / numRows);
+                const bRow = bIndex % numRows;
+                
+                // First sort by column, then by row
+                if (aCol !== bCol) return aCol - bCol;
+                return aRow - bRow;
+            });
+            
+            // Remove all items from grid
+            grid.innerHTML = '';
+            
+            // Add items back in sorted order
+            sortedItems.forEach(item => {
+                grid.appendChild(item);
+            });
+        }
+        
+        // Add resize handler to recalculate grid when window size changes
+        window.addEventListener('resize', function() {
+            if (gridContainer.style.display === 'block' && nameFileInput.files[0]) {
+                // Reload the grid if we have a file and we're showing flashcards
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const contents = e.target.result;
+                    const names = contents.split('\n')
+                        .map(name => name.trim())
+                        .filter(name => name.length > 0);
+                    
+                    createFlashcards(names);
+                };
+                
+                reader.readAsText(nameFileInput.files[0]);
+            }
+        });
+    </script>
+</body>
+</html>
