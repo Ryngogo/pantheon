@@ -84,8 +84,57 @@
             display: none;
         }
         
+        .text-area-container {
+            margin: 25px 0;
+            width: 80%;
+            max-width: 320px;
+            margin: 25px auto;
+        }
+        
+        .text-area-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #6c757d;
+            text-align: left;
+        }
+        
+        #nameTextArea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.2s ease;
+        }
+        
+        #nameTextArea:focus {
+            border-color: #adb5bd;
+            outline: none;
+        }
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #6c757d;
+        }
+        
+        .or-divider::before,
+        .or-divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .or-divider span {
+            padding: 0 10px;
+        }
+        
         #loadNames {
-            background-color: #3498db;
+            background-color: #6b0404;
             color: white;
             border: none;
             padding: 12px 25px;
@@ -98,7 +147,7 @@
         }
         
         #loadNames:hover {
-            background-color: #2980b9;
+            background-color: #8b0000;
         }
         
         #loadNames:disabled {
@@ -117,7 +166,7 @@
         .flashcard-icon {
             font-size: 3rem;
             margin-bottom: 15px;
-            color: #3498db;
+            color: #6b0404;
         }
         
         .file-name {
@@ -193,7 +242,7 @@
         
         .card-front {
             background-color: #6b0404;
-            background-image: linear-gradient(135deg, #3498db, #2980b9);
+            background-image: linear-gradient(135deg, #6b0404, #8b0000);
             color: white;
             font-weight: bold;
             font-size: 1.1rem;
@@ -242,7 +291,6 @@
         .example-card {
             width: 80px;
             height: 100px;
-            background-color: #3498db;
             border-radius: 8px;
             margin: 0 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -276,13 +324,13 @@
             display: none;
             margin-top: 15px;
             padding: 10px;
-            background-color: #e9f7fe;
+            background-color: #f8e6e6;
             border-radius: 5px;
             text-align: left;
         }
         
         .file-info strong {
-            color: #2980b9;
+            color: #6b0404;
         }
     </style>
 </head>
@@ -315,9 +363,18 @@
                 <div id="fileInfo" class="file-info"></div>
             </div>
             
-            <button id="loadNames" disabled>Create Flashcards</button>
+            <div class="or-divider">
+                <span>OR</span>
+            </div>
             
-            <p class="instructions">Upload a text file with one name per line to create interactive flashcards.<br>Perfect for studying, memorization, or learning names!</p>
+            <div class="text-area-container">
+                <label for="nameTextArea" class="text-area-label">Paste names directly (one name per line):</label>
+                <textarea id="nameTextArea" placeholder="Zeus&#10;Poseidon&#10;Hades&#10;Athena"></textarea>
+            </div>
+            
+            <button id="loadNames">Create Flashcards</button>
+            
+            <p class="instructions">Upload a text file or paste names directly to create interactive flashcards.<br>Perfect for studying, memorization, or learning names!</p>
         </div>
         
         <button id="backButton" class="back-button">← Back to Upload</button>
@@ -329,6 +386,7 @@
 
     <script>
         const nameFileInput = document.getElementById('nameFile');
+        const nameTextArea = document.getElementById('nameTextArea');
         const loadNamesButton = document.getElementById('loadNames');
         const fileNameDisplay = document.getElementById('fileName');
         const fileInfoDisplay = document.getElementById('fileInfo');
@@ -343,6 +401,9 @@
             if (file) {
                 fileNameDisplay.textContent = file.name;
                 loadNamesButton.disabled = false;
+                
+                // Clear textarea when file is selected
+                nameTextArea.value = '';
                 
                 // Read file to display preview info
                 const reader = new FileReader();
@@ -359,41 +420,83 @@
             } else {
                 fileNameDisplay.textContent = '';
                 fileInfoDisplay.style.display = 'none';
-                loadNamesButton.disabled = true;
+                checkInputs();
             }
         });
         
-        // Load names and create flashcards
-        loadNamesButton.addEventListener('click', function() {
-            const file = nameFileInput.files[0];
-            
-            if (!file) {
-                alert('Please select a text file first.');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const contents = e.target.result;
-                const names = contents.split('\n')
+        // Handle textarea input
+        nameTextArea.addEventListener('input', function() {
+            if (this.value.trim()) {
+                // Clear file input when textarea has content
+                nameFileInput.value = '';
+                fileNameDisplay.textContent = '';
+                fileInfoDisplay.style.display = 'none';
+                
+                const names = this.value.split('\n')
                     .map(name => name.trim())
                     .filter(name => name.length > 0);
                 
-                if (names.length === 0) {
-                    alert('No names found in the file. Please check your file and try again.');
-                    return;
-                }
-                
-                // Switch to flashcard view
-                uploadScreen.style.display = 'none';
-                gridContainer.style.display = 'block';
-                backButton.style.display = 'block';
-                
-                createFlashcards(names);
-            };
-            
-            reader.readAsText(file);
+                fileInfoDisplay.innerHTML = `<strong>${names.length}</strong> names found in text`;
+                fileInfoDisplay.style.display = 'block';
+                loadNamesButton.disabled = false;
+            } else {
+                fileInfoDisplay.style.display = 'none';
+                checkInputs();
+            }
         });
+        
+        // Check if either input has content
+        function checkInputs() {
+            if ((nameFileInput.files && nameFileInput.files[0]) || nameTextArea.value.trim()) {
+                loadNamesButton.disabled = false;
+            } else {
+                loadNamesButton.disabled = true;
+            }
+        }
+        
+        // Load names and create flashcards
+        loadNamesButton.addEventListener('click', function() {
+            let names = [];
+            
+            // Check if we have a file or text input
+            if (nameFileInput.files && nameFileInput.files[0]) {
+                const file = nameFileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const contents = e.target.result;
+                    names = contents.split('\n')
+                        .map(name => name.trim())
+                        .filter(name => name.length > 0);
+                    
+                    processNames(names);
+                };
+                
+                reader.readAsText(file);
+            } else if (nameTextArea.value.trim()) {
+                names = nameTextArea.value.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+                
+                processNames(names);
+            } else {
+                alert('Please either select a text file or enter names in the text area.');
+            }
+        });
+        
+        function processNames(names) {
+            if (names.length === 0) {
+                alert('No names found. Please check your input and try again.');
+                return;
+            }
+            
+            // Switch to flashcard view
+            uploadScreen.style.display = 'none';
+            gridContainer.style.display = 'block';
+            backButton.style.display = 'block';
+            
+            createFlashcards(names);
+        }
         
         // Back button functionality
         backButton.addEventListener('click', function() {
@@ -485,19 +588,31 @@
         
         // Add resize handler to recalculate grid when window size changes
         window.addEventListener('resize', function() {
-            if (gridContainer.style.display === 'block' && nameFileInput.files[0]) {
-                // Reload the grid if we have a file and we're showing flashcards
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const contents = e.target.result;
-                    const names = contents.split('\n')
+            if (gridContainer.style.display === 'block') {
+                // Get the current names
+                let names = [];
+                
+                if (nameFileInput.files && nameFileInput.files[0]) {
+                    // Use file input
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const contents = e.target.result;
+                        names = contents.split('\n')
+                            .map(name => name.trim())
+                            .filter(name => name.length > 0);
+                        
+                        createFlashcards(names);
+                    };
+                    
+                    reader.readAsText(nameFileInput.files[0]);
+                } else if (nameTextArea.value.trim()) {
+                    // Use textarea input
+                    names = nameTextArea.value.split('\n')
                         .map(name => name.trim())
                         .filter(name => name.length > 0);
                     
                     createFlashcards(names);
-                };
-                
-                reader.readAsText(nameFileInput.files[0]);
+                }
             }
         });
     </script>
