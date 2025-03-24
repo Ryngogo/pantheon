@@ -476,6 +476,9 @@
         const backButton = document.getElementById('backButton');
         const themeToggle = document.getElementById('themeToggle');
         
+        // Track which cards are flipped (by index)
+        let flippedCards = new Set();
+        
         // Theme toggle functionality
         themeToggle.addEventListener('click', function() {
             const html = document.documentElement;
@@ -566,6 +569,9 @@
         
         // Load names and create flashcards
         loadNamesButton.addEventListener('click', function() {
+            // Reset the flipped cards tracking set
+            flippedCards = new Set();
+            
             let names = [];
             
             // Check if we have a file or text input
@@ -634,6 +640,7 @@
             names.forEach((name, index) => {
                 const cardContainer = document.createElement('div');
                 cardContainer.className = 'card-container';
+                cardContainer.dataset.nameIndex = index;
                 
                 const cardNumber = document.createElement('div');
                 cardNumber.className = 'card-number';
@@ -641,8 +648,21 @@
                 
                 const card = document.createElement('div');
                 card.className = 'card';
+                // Add flipped class if this card was previously flipped
+                if (flippedCards.has(index)) {
+                    card.classList.add('flipped');
+                }
+                
                 card.addEventListener('click', function() {
                     this.classList.toggle('flipped');
+                    
+                    // Update our tracking set
+                    const containerIndex = parseInt(cardContainer.dataset.nameIndex);
+                    if (this.classList.contains('flipped')) {
+                        flippedCards.add(containerIndex);
+                    } else {
+                        flippedCards.delete(containerIndex);
+                    }
                 });
                 
                 const cardInner = document.createElement('div');
@@ -691,7 +711,7 @@
             grid.innerHTML = '';
             
             // Add items back in sorted order
-            sortedItems.forEach(item => {
+            sortedItems.forEach((item) => {
                 grid.appendChild(item);
             });
         }
