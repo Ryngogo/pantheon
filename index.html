@@ -1,19 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pantheon!</title>
     <style>
+        :root {
+            --primary-color: #4a6da7;
+            --primary-hover: #3a5a8f;
+            --text-color: #333;
+            --text-secondary: #6c757d;
+            --background-color: #f8f9fa;
+            --card-background: white;
+            --card-border: #e0e0e0;
+            --input-background: #e9ecef;
+            --input-border: #ced4da;
+            --input-border-hover: #adb5bd;
+            --info-background: #e3f2fd;
+            --info-text: #0d6efd;
+            --flashcard-front: #6b0404;
+            --flashcard-front-gradient: linear-gradient(135deg, #6b0404, #8b0000);
+            --flashcard-back: white;
+            --flashcard-text: white;
+            --flashcard-back-text: #333;
+            --box-shadow: rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: rgba(0, 0, 0, 0.12);
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #5d82c3;
+            --primary-hover: #7a9dd9;
+            --text-color: #e0e0e0;
+            --text-secondary: #adb5bd;
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --card-border: #333;
+            --input-background: #2d2d2d;
+            --input-border: #444;
+            --input-border-hover: #666;
+            --info-background: #1a3a6a;
+            --info-text: #63a4ff;
+            --flashcard-front: #6b0404;
+            --flashcard-front-gradient: linear-gradient(135deg, #6b0404, #8b0000);
+            --flashcard-back: #2d2d2d;
+            --flashcard-text: white;
+            --flashcard-back-text: #e0e0e0;
+            --box-shadow: rgba(0, 0, 0, 0.2);
+            --box-shadow-hover: rgba(0, 0, 0, 0.3);
+        }
+        
         body, html {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background-color: var(--background-color);
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow-x: hidden;
-            color: #333;
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .container {
@@ -25,25 +70,51 @@
         
         h1 {
             text-align: center;
-            color: #2c3e50;
+            color: var(--text-color);
             margin-top: 0;
             font-size: 2.2rem;
             margin-bottom: 1rem;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 5px var(--box-shadow);
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--input-background);
+        }
+        
+        .theme-icon {
+            color: var(--text-color);
+            font-size: 1.2rem;
         }
         
         .upload-container {
             max-width: 600px;
             margin: 40px auto;
             padding: 30px;
-            background-color: white;
+            background-color: var(--card-background);
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px var(--box-shadow);
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
         }
         
         .upload-container:hover {
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 6px 25px var(--box-shadow-hover);
         }
         
         .file-input {
@@ -57,27 +128,28 @@
         .file-input-label {
             display: inline-block;
             padding: 12px 20px;
-            background-color: #e9ecef;
+            background-color: var(--input-background);
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 15px;
             font-weight: 500;
             transition: all 0.2s ease;
-            border: 2px dashed #ced4da;
+            border: 2px dashed var(--input-border);
             width: 80%;
             max-width: 320px;
+            color: var(--text-color);
         }
         
         .file-input-label:hover {
-            background-color: #dee2e6;
-            border-color: #adb5bd;
+            background-color: var(--input-background);
+            border-color: var(--input-border-hover);
         }
         
         .file-input-label span {
             display: block;
             margin-top: 8px;
             font-size: 0.9rem;
-            color: #6c757d;
+            color: var(--text-secondary);
         }
         
         #nameFile {
@@ -95,7 +167,7 @@
             display: block;
             margin-bottom: 10px;
             font-weight: 500;
-            color: #6c757d;
+            color: var(--text-secondary);
             text-align: left;
         }
         
@@ -103,15 +175,17 @@
             width: 100%;
             height: 120px;
             padding: 12px;
-            border: 2px dashed #ced4da;
+            border: 2px dashed var(--input-border);
             border-radius: 8px;
             font-family: inherit;
             resize: vertical;
             transition: all 0.2s ease;
+            background-color: var(--input-background);
+            color: var(--text-color);
         }
         
         #nameTextArea:focus {
-            border-color: #adb5bd;
+            border-color: var(--input-border-hover);
             outline: none;
         }
         
@@ -119,14 +193,14 @@
             display: flex;
             align-items: center;
             margin: 20px 0;
-            color: #6c757d;
+            color: var(--text-secondary);
         }
         
         .or-divider::before,
         .or-divider::after {
             content: "";
             flex: 1;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid var(--input-border);
         }
         
         .or-divider span {
@@ -134,7 +208,7 @@
         }
         
         #loadNames {
-            background-color: #6b0404;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -147,18 +221,18 @@
         }
         
         #loadNames:hover {
-            background-color: #8b0000;
+            background-color: var(--primary-hover);
         }
         
         #loadNames:disabled {
-            background-color: #95a5a6;
+            background-color: var(--text-secondary);
             cursor: not-allowed;
         }
         
         .instructions {
             text-align: center;
             margin: 20px 0;
-            color: #6c757d;
+            color: var(--text-secondary);
             line-height: 1.5;
             font-size: 1rem;
         }
@@ -166,13 +240,13 @@
         .flashcard-icon {
             font-size: 3rem;
             margin-bottom: 15px;
-            color: #6b0404;
+            color: var(--primary-color);
         }
         
         .file-name {
             margin-top: 10px;
             font-size: 0.9rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             font-style: italic;
         }
         
@@ -189,28 +263,29 @@
             grid-auto-columns: minmax(230px, 1fr);
             width: 100%;
             height: 100%;
-            gap: 15px;
+            gap: 10px;
         }
         
         .card-container {
             display: flex;
             align-items: center;
-            padding: 5px;
+            padding: 3px;
         }
         
         .card-number {
             font-size: 16px;
             font-weight: bold;
-            margin-right: 10px;
+            margin-right: 8px;
             width: 25px;
             text-align: right;
             flex-shrink: 0;
+            color: var(--text-color);
         }
         
         .card {
             position: relative;
             width: 100%;
-            height: 100px;
+            height: 90px;
             perspective: 1000px;
             cursor: pointer;
             flex-grow: 1;
@@ -241,27 +316,27 @@
         }
         
         .card-front {
-            background-color: #6b0404;
-            background-image: linear-gradient(135deg, #6b0404, #8b0000);
-            color: white;
+            background-color: var(--flashcard-front);
+            background-image: var(--flashcard-front-gradient);
+            color: var(--flashcard-text);
             font-weight: bold;
             font-size: 1.1rem;
         }
         
         .card-back {
-            background-color: #fff;
+            background-color: var(--flashcard-back);
             transform: rotateY(180deg);
-            border: 2px solid #e0e0e0;
-            padding: 10px;
+            border: 2px solid var(--card-border);
+            padding: 5px;
             box-sizing: border-box;
             overflow: hidden;
             word-break: break-word;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px var(--box-shadow);
         }
         
         .name {
-            font-size: 16px;
-            color: #333;
+            font-size: 18px;
+            color: var(--flashcard-back-text);
         }
         
         .back-button {
@@ -269,16 +344,17 @@
             top: 20px;
             left: 20px;
             padding: 10px 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border);
             border-radius: 5px;
             cursor: pointer;
             display: none;
             z-index: 100;
+            color: var(--text-color);
         }
         
         .back-button:hover {
-            background-color: #e9ecef;
+            background-color: var(--input-background);
         }
         
         /* Example flashcards in the upload screen */
@@ -293,7 +369,7 @@
             height: 100px;
             border-radius: 8px;
             margin: 0 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px var(--box-shadow);
             transform: rotate(0deg);
             transition: transform 0.3s ease;
             position: relative;
@@ -324,19 +400,24 @@
             display: none;
             margin-top: 15px;
             padding: 10px;
-            background-color: #f8e6e6;
+            background-color: var(--info-background);
             border-radius: 5px;
             text-align: left;
+            color: var(--text-color);
         }
         
         .file-info strong {
-            color: #6b0404;
+            color: var(--info-text);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Pantheon!</h1>
+        
+        <div class="theme-toggle" id="themeToggle">
+            <span class="theme-icon">🌙</span>
+        </div>
         
         <div id="uploadScreen" class="upload-container">
             <div class="flashcard-icon">🌐</div>
@@ -393,6 +474,35 @@
         const uploadScreen = document.getElementById('uploadScreen');
         const gridContainer = document.querySelector('.grid-container');
         const backButton = document.getElementById('backButton');
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Store theme preference
+            localStorage.setItem('theme', newTheme);
+        });
+        
+        // Update theme icon based on current theme
+        function updateThemeIcon(theme) {
+            const themeIcon = themeToggle.querySelector('.theme-icon');
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Check for saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            }
+        });
         
         // Handle file selection
         nameFileInput.addEventListener('change', function() {
@@ -511,7 +621,7 @@
             
             // Calculate the optimal number of rows
             const containerHeight = gridContainer.clientHeight;
-            const estimatedCardHeight = 120; // Card height + margins
+            const estimatedCardHeight = 100; // Reduced card height + margins
             const numRows = Math.floor(containerHeight / estimatedCardHeight);
             
             // Calculate how many columns we need
