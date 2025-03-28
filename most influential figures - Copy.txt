@@ -1,0 +1,29 @@
+Muhammad:RELIGIOUS FIGURE
+Genghis Khan:MILITARY PERSONNEL
+Leonardo da Vinci:INVENTOR
+Isaac Newton:PHYSICIST
+Ludwig van Beethoven:COMPOSER
+Alexander the Great:MILITARY PERSONNEL
+Aristotle:PHILOSOPHER
+Napoleon:POLITICIAN
+Julius Caesar:POLITICIAN
+Wolfgang Amadeus Mozart:COMPOSER
+Plato:PHILOSOPHER
+Jesus:RELIGIOUS FIGURE
+Adolf Hitler:POLITICIAN
+Galileo Galilei:ASTRONOMER
+Marco Polo:EXPLORER
+Socrates:PHILOSOPHER
+Donald Trump:POLITICIAN
+Johann Sebastian Bach:COMPOSER
+Albert Einstein:PHYSICIST
+Michelangelo:PAINTER
+William Shakespeare:WRITER
+Martin Luther:RELIGIOUS FIGURE
+Christopher Columbus:EXPLORER
+Moses:RELIGIOUS FIGURE
+Archimedes:MATHEMATICIAN
+Abraham:RELIGIOUS FIGURE
+Sigmund Freud:PSYCHOLOGIST
+Confucius:PHILOSOPHER
+Vincent van Gogh:PAINTER
