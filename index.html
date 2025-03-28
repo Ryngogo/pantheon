@@ -645,20 +645,20 @@
             // Color palette for players with light and dark mode variations
             const playerColors = {
                 light: [
-                    { background: '#E6F2FF', text: '#1E88E5' },     // Blue
-                    { background: '#E8F5E9', text: '#43A047' },     // Green
-                    { background: '#FFF3E0', text: '#FB8C00' },     // Orange
-                    { background: '#F3E5F5', text: '#8E24AA' },     // Purple
-                    { background: '#FFEBEE', text: '#E53935' },     // Red
-                    { background: '#E0F7FA', text: '#00ACC1' },     // Cyan
+                    { background: '#E6F2FF', text: '#1E88E5', nameColor: '#1E88E5' },     // Blue
+                    { background: '#E8F5E9', text: '#43A047', nameColor: '#43A047' },     // Green
+                    { background: '#FFF3E0', text: '#FB8C00', nameColor: '#FB8C00' },     // Orange
+                    { background: '#F3E5F5', text: '#8E24AA', nameColor: '#8E24AA' },     // Purple
+                    { background: '#FFEBEE', text: '#E53935', nameColor: '#E53935' },     // Red
+                    { background: '#E0F7FA', text: '#00ACC1', nameColor: '#00ACC1' },     // Cyan
                 ],
                 dark: [
-                    { background: '#1A3A6A', text: '#63A4FF' },     // Blue
-                    { background: '#1B5E20', text: '#4CAF50' },     // Green
-                    { background: '#E65100', text: '#FFA726' },     // Orange
-                    { background: '#4A148C', text: '#BA68C8' },     // Purple
-                    { background: '#B71C1C', text: '#EF5350' },     // Red
-                    { background: '#006064', text: '#26C6DA' },     // Cyan
+                    { background: '#1A3A6A', text: '#63A4FF', nameColor: 'white' },     // Blue
+                    { background: '#1B5E20', text: '#4CAF50', nameColor: 'white' },     // Green
+                    { background: '#E65100', text: '#FFA726', nameColor: 'white' },     // Orange
+                    { background: '#4A148C', text: '#BA68C8', nameColor: 'white' },     // Purple
+                    { background: '#B71C1C', text: '#EF5350', nameColor: 'white' },     // Red
+                    { background: '#006064', text: '#26C6DA', nameColor: 'white' },     // Cyan
                 ]
             };
         
@@ -802,22 +802,26 @@
                     minusBtn.className = 'score-btn';
                     minusBtn.textContent = '-';
                     minusBtn.style.backgroundColor = colorScheme.text;
+                    minusBtn.style.color = 'white'; // Ensure button text is always white
+                    minusBtn.style.fontSize = "22pt"
                     
                     const playerNameElement = document.createElement('span');
                     playerNameElement.className = 'player-name';
                     playerNameElement.textContent = player.name;
-                    playerNameElement.style.color = colorScheme.text;
+                    playerNameElement.style.color = colorScheme.nameColor; // Use the specific name color
                     
                     const scoreElement = document.createElement('div');
                     scoreElement.className = 'player-score';
                     scoreElement.textContent = player.score;
-                    scoreElement.style.color = colorScheme.text;
+                    scoreElement.style.color = colorScheme.nameColor; // Use the specific name color
                     
                     const plusBtn = document.createElement('button');
                     plusBtn.className = 'score-btn';
                     plusBtn.textContent = '+';
                     plusBtn.style.backgroundColor = colorScheme.text;
-                    
+                    plusBtn.style.color = 'white'; // Ensure button text is always white
+                    plusBtn.style.fontSize = "22pt"
+
                     minusBtn.addEventListener('click', () => {
                         player.score = Math.max(0, player.score - 1);
                         scoreElement.textContent = player.score;
