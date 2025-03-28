@@ -459,11 +459,21 @@
             color: var(--text-secondary);
         }
         
+        .grid-container {
+            width: 100%;
+            height: calc(100vh - 220px); /* Subtract more header space to make room for scoreboard */
+            overflow: auto;
+            display: none; /* Initially hidden */
+            padding-bottom: 0; /* Remove bottom padding */
+            box-sizing: border-box;
+        }
+
         .scoreboard {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
+            height: 100px; /* Fixed height */
             background-color: var(--card-background);
             display: none;
             padding: 15px;
@@ -471,6 +481,17 @@
             z-index: 100;
             justify-content: center;
             flex-wrap: wrap;
+            overflow-y: auto;
+        }
+
+        .container {
+            padding-bottom: 0; /* Remove bottom padding */
+        }
+
+        /* Ensure scoreboard scrolls internally if too many players */
+        .scoreboard {
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .player-score-container {
@@ -802,26 +823,24 @@
                     minusBtn.className = 'score-btn';
                     minusBtn.textContent = '-';
                     minusBtn.style.backgroundColor = colorScheme.text;
-                    minusBtn.style.color = 'white'; // Ensure button text is always white
-                    minusBtn.style.fontSize = "22pt"
+                    minusBtn.style.color = 'white';
                     
                     const playerNameElement = document.createElement('span');
                     playerNameElement.className = 'player-name';
                     playerNameElement.textContent = player.name;
-                    playerNameElement.style.color = colorScheme.nameColor; // Use the specific name color
+                    playerNameElement.style.color = colorScheme.nameColor;
                     
                     const scoreElement = document.createElement('div');
                     scoreElement.className = 'player-score';
                     scoreElement.textContent = player.score;
-                    scoreElement.style.color = colorScheme.nameColor; // Use the specific name color
+                    scoreElement.style.color = colorScheme.nameColor;
                     
                     const plusBtn = document.createElement('button');
                     plusBtn.className = 'score-btn';
                     plusBtn.textContent = '+';
                     plusBtn.style.backgroundColor = colorScheme.text;
-                    plusBtn.style.color = 'white'; // Ensure button text is always white
-                    plusBtn.style.fontSize = "22pt"
-
+                    plusBtn.style.color = 'white';
+                    
                     minusBtn.addEventListener('click', () => {
                         player.score = Math.max(0, player.score - 1);
                         scoreElement.textContent = player.score;
@@ -841,7 +860,13 @@
                 });
                 
                 // Show/hide scoreboard based on players
-                scoreboard.style.display = players.length > 0 ? 'flex' : 'none';
+                if (players.length > 0) {
+                    scoreboard.style.display = 'flex';
+                    gridContainer.style.paddingBottom = '120px'; // Add space for scoreboard
+                } else {
+                    scoreboard.style.display = 'none';
+                    gridContainer.style.paddingBottom = '20px'; // Reset to normal padding
+                }
             }
             
             // Modify the processNames function to create flashcards and scoreboard
@@ -872,13 +897,12 @@
                 createScoreboard();
             }
             
-            // Modify back button to reset players
+            // Modify the back button click handler to reset padding
             backButton.addEventListener('click', function() {
                 uploadScreen.style.display = 'block';
                 gridContainer.style.display = 'none';
                 backButton.style.display = 'none';
-                
-                // Reset scoreboard
+                gridContainer.style.paddingBottom = '20px'; // Reset padding
                 scoreboard.style.display = 'none';
                 scoreboard.innerHTML = '';
             });
