@@ -3,7 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pantheon! - Fixed Flashcards</title>
+    <title>Pantheon!</title>
+    <!-- Essential Meta Tags -->
+    <meta name="description" content="Run your own Pantheon quiz games inspired by EFAP 255! Create unlimited entries, customize labels, track team scores, and enjoy a simple, ad-free experience with no accounts needed.">
+
+    <!-- Open Graph / Social Media Tags -->
+    <meta property="og:title" content="Pantheon Quiz - Host Custom Quiz Games">
+    <meta property="og:description" content="Create and run your own EFAP-style Pantheon quiz with unlimited entries, team scoring, custom labels, and multipliers - all with no accounts, no tracking, and no ads.">
+    <meta property="og:url" content="https://pantheonquiz.glitch.me">
+    <meta property="og:type" content="website">
+
+    <!-- Additional SEO Tags -->
+    <meta name="keywords" content="pantheon quiz, EFAP 255, quiz game, team quiz, custom quiz maker, no account quiz, ad-free quiz, multiplayer quiz">
+    <meta name="author" content="Pantheon Quiz Creator">
+    <meta name="robots" content="index, follow">
+
+    <!-- Mobile Optimization -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#8B0000">
+    <meta property="og:image" content="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2Fhello-website-social.png?v=1616712748147"/>
+    <meta name="twitter:card" content="summary" />
     <style>
         :root {
             --primary-color: #4a6da7;
@@ -66,8 +85,6 @@
             height: 100%;
             padding: 20px;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
         }
         
         h1 {
@@ -76,7 +93,6 @@
             margin-top: 0;
             font-size: 2.2rem;
             margin-bottom: 1rem;
-            flex-shrink: 0;
         }
         
         .theme-toggle {
@@ -107,14 +123,13 @@
         
         .upload-container {
             max-width: 600px;
-            margin: auto;
+            margin: 40px auto;
             padding: 30px;
             background-color: var(--card-background);
             border-radius: 12px;
             box-shadow: 0 4px 20px var(--box-shadow);
             text-align: center;
             transition: all 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-            flex-shrink: 0;
         }
         
         .upload-container:hover {
@@ -256,11 +271,9 @@
         
         .grid-container {
             width: 100%;
-            flex: 1;
+            height: calc(100vh - 150px); /* Subtract header space */
             overflow: auto;
-            display: none;
-            padding-bottom: 0;
-            box-sizing: border-box;
+            display: none; /* Initially hidden */
         }
         
         .grid {
@@ -291,9 +304,9 @@
         .card {
             position: relative;
             width: 100%;
-            height: 90px;
+            height: 85px;
             perspective: 1000px;
-            cursor: pointer;
+            cursor: grab;
             flex-grow: 1;
         }
         
@@ -465,9 +478,21 @@
             color: var(--text-secondary);
         }
         
-        .scoreboard {
+        .grid-container {
             width: 100%;
-            min-height: 100px;
+            height: calc(100vh - 220px); /* Subtract more header space to make room for scoreboard */
+            overflow: auto;
+            display: none; /* Initially hidden */
+            padding-bottom: 0; /* Remove bottom padding */
+            box-sizing: border-box;
+        }
+
+        .scoreboard {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 110px; /* Fixed height */
             background-color: var(--card-background);
             display: none;
             padding: 15px;
@@ -476,8 +501,16 @@
             justify-content: center;
             flex-wrap: wrap;
             overflow-y: auto;
-            flex-shrink: 0;
-            box-sizing: border-box;
+        }
+
+        .container {
+            padding-bottom: 0; /* Remove bottom padding */
+        }
+
+        /* Ensure scoreboard scrolls internally if too many players */
+        .scoreboard {
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .player-score-container {
@@ -529,6 +562,99 @@
             font-weight: bold;
             min-width: 40px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: 1.5em;
+            line-height: 1.5em;
+        }
+
+        .score-digit-container {
+            position: relative;
+            display: inline-block;
+            height: 1.5em;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .score-digit {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.5s ease;
+        }
+
+        @keyframes digitSlideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes digitSlideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .digit-animate-up {
+            animation: digitSlideUp 0.5s ease forwards;
+        }
+
+        .digit-animate-down {
+            animation: digitSlideDown 0.5s ease forwards;
+        }
+
+        /* Optional: Add these styles for a more slot-machine like appearance */
+        .score-digit-container {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            margin: 0 1px;
+            min-width: 0.8em;
+        }
+
+        .score-modifiers {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .score-modifier {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-modifier label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .score-modifier input {
+            width: 60px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-background);
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .score-modifier input:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
     </style>
 </head>
@@ -595,6 +721,17 @@
         </div>
         
         <div id="scoreboard" class="scoreboard">
+            <!-- Add this new container for the input fields -->
+            <div class="score-modifiers">
+                <div class="score-modifier">
+                    <label for="positiveModifier">Positive:</label>
+                    <input type="number" id="positiveModifier" value="1" min="1">
+                </div>
+                <div class="score-modifier">
+                    <label for="negativeModifier">Negative:</label>
+                    <input type="number" id="negativeModifier" value="1" min="1">
+                </div>
+            </div>
             <!-- Player scores will be dynamically added here -->
         </div>
         
@@ -793,6 +930,48 @@
             function createScoreboard() {
                 scoreboard.innerHTML = '';
                 
+                // Create score modifiers container
+                const scoreModifiers = document.createElement('div');
+                scoreModifiers.className = 'score-modifiers';
+                
+                // Positive modifier
+                const positiveModifier = document.createElement('div');
+                positiveModifier.className = 'score-modifier';
+                
+                const positiveLabel = document.createElement('label');
+                positiveLabel.textContent = 'Positive:';
+                positiveLabel.htmlFor = 'positiveModifier';
+                
+                const positiveInput = document.createElement('input');
+                positiveInput.type = 'number';
+                positiveInput.id = 'positiveModifier';
+                positiveInput.value = '1';
+                positiveInput.min = '1';
+                
+                positiveModifier.appendChild(positiveLabel);
+                positiveModifier.appendChild(positiveInput);
+                
+                // Negative modifier
+                const negativeModifier = document.createElement('div');
+                negativeModifier.className = 'score-modifier';
+                
+                const negativeLabel = document.createElement('label');
+                negativeLabel.textContent = 'Negative:';
+                negativeLabel.htmlFor = 'negativeModifier';
+                
+                const negativeInput = document.createElement('input');
+                negativeInput.type = 'number';
+                negativeInput.id = 'negativeModifier';
+                negativeInput.value = '1';
+                negativeInput.min = '1';
+                
+                negativeModifier.appendChild(negativeLabel);
+                negativeModifier.appendChild(negativeInput);
+                
+                scoreModifiers.appendChild(positiveModifier);
+                scoreModifiers.appendChild(negativeModifier);
+                scoreboard.appendChild(scoreModifiers);
+                
                 // Determine current theme
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 const colorSet = currentTheme === 'dark' ? playerColors.dark : playerColors.light;
@@ -818,8 +997,10 @@
                     
                     const scoreElement = document.createElement('div');
                     scoreElement.className = 'player-score';
-                    scoreElement.textContent = player.score;
                     scoreElement.style.color = colorScheme.nameColor;
+                    
+                    // Create the initial score display with digits
+                    updateScoreDisplay(scoreElement, player.score);
                     
                     const plusBtn = document.createElement('button');
                     plusBtn.className = 'score-btn';
@@ -828,13 +1009,21 @@
                     plusBtn.style.color = 'white';
                     
                     minusBtn.addEventListener('click', () => {
-                        player.score = Math.max(0, player.score - 1);
-                        scoreElement.textContent = player.score;
+                        const negativeValue = parseInt(document.getElementById('negativeModifier').value) || 1;
+                        const oldScore = player.score;
+                        player.score = Math.max(0, player.score - negativeValue);
+                        
+                        // Update with animation
+                        animateScoreChange(scoreElement, oldScore, player.score, false);
                     });
                     
                     plusBtn.addEventListener('click', () => {
-                        player.score += 1;
-                        scoreElement.textContent = player.score;
+                        const positiveValue = parseInt(document.getElementById('positiveModifier').value) || 1;
+                        const oldScore = player.score;
+                        player.score += positiveValue;
+                        
+                        // Update with animation
+                        animateScoreChange(scoreElement, oldScore, player.score, true);
                     });
                     
                     playerScoreContainer.appendChild(minusBtn);
@@ -848,11 +1037,92 @@
                 // Show/hide scoreboard based on players
                 if (players.length > 0) {
                     scoreboard.style.display = 'flex';
+                    gridContainer.style.paddingBottom = '120px'; // Add space for scoreboard
                 } else {
                     scoreboard.style.display = 'none';
+                    gridContainer.style.paddingBottom = '20px'; // Reset to normal padding
                 }
             }
             
+            // Function to create or update the score display
+            function updateScoreDisplay(element, score) {
+                // Convert score to string and pad with zeros if needed
+                const scoreStr = score.toString().padStart(1, '0');
+                
+                // Clear the element
+                element.innerHTML = '';
+                
+                // Add each digit in its own container
+                for (let i = 0; i < scoreStr.length; i++) {
+                    const digitContainer = document.createElement('div');
+                    digitContainer.className = 'score-digit-container';
+                    
+                    const digit = document.createElement('div');
+                    digit.className = 'score-digit';
+                    digit.textContent = scoreStr[i];
+                    
+                    digitContainer.appendChild(digit);
+                    element.appendChild(digitContainer);
+                }
+            }
+
+            // Function to animate score changes
+            function animateScoreChange(element, oldScore, newScore, isIncrease) {
+                // Convert scores to strings and pad with zeros as needed
+                const oldScoreStr = oldScore.toString().padStart(Math.max(1, newScore.toString().length), '0');
+                const newScoreStr = newScore.toString().padStart(Math.max(1, oldScoreStr.length), '0');
+                
+                // Clear the element
+                element.innerHTML = '';
+                
+                // Create containers for each digit
+                for (let i = 0; i < newScoreStr.length; i++) {
+                    const digitContainer = document.createElement('div');
+                    digitContainer.className = 'score-digit-container';
+                    
+                    // Only animate digits that change
+                    if (i >= oldScoreStr.length || oldScoreStr[i] !== newScoreStr[i]) {
+                        // Create the old digit that will slide out
+                        if (oldScore > 0 && i < oldScoreStr.length) {
+                            const oldDigit = document.createElement('div');
+                            oldDigit.className = 'score-digit';
+                            oldDigit.textContent = oldScoreStr[i];
+                            oldDigit.style.transform = 'translateY(0)';
+                            
+                            // Animate the old digit sliding out
+                            setTimeout(() => {
+                                oldDigit.style.transform = isIncrease ? 'translateY(-100%)' : 'translateY(100%)';
+                                oldDigit.style.opacity = '0';
+                            }, 10);
+                            
+                            digitContainer.appendChild(oldDigit);
+                        }
+                        
+                        // Create the new digit that will slide in
+                        const newDigit = document.createElement('div');
+                        newDigit.className = 'score-digit';
+                        newDigit.textContent = newScoreStr[i];
+                        newDigit.style.opacity = '0';
+                        newDigit.style.transform = isIncrease ? 'translateY(100%)' : 'translateY(-100%)';
+                        
+                        // Animate the new digit sliding in
+                        setTimeout(() => {
+                            newDigit.classList.add(isIncrease ? 'digit-animate-up' : 'digit-animate-down');
+                        }, 50);
+                        
+                        digitContainer.appendChild(newDigit);
+                    } else {
+                        // No animation needed for unchanged digits
+                        const digit = document.createElement('div');
+                        digit.className = 'score-digit';
+                        digit.textContent = newScoreStr[i];
+                        digitContainer.appendChild(digit);
+                    }
+                    
+                    element.appendChild(digitContainer);
+                }
+            }
+
             // Modify the processNames function to create flashcards and scoreboard
             function processNames(names) {
                 if (names.length === 0) {
@@ -881,11 +1151,12 @@
                 createScoreboard();
             }
             
-            // Modify the back button click handler
+            // Modify the back button click handler to reset padding
             backButton.addEventListener('click', function() {
                 uploadScreen.style.display = 'block';
                 gridContainer.style.display = 'none';
                 backButton.style.display = 'none';
+                gridContainer.style.paddingBottom = '20px'; // Reset padding
                 scoreboard.style.display = 'none';
                 scoreboard.innerHTML = '';
             });
@@ -998,7 +1269,7 @@
                     let names = [];
                     
                     if (nameFileInput.files && nameFileInput.files[0]) {
-                        const file = nameFileInput.files[0];
+                        // Use file input
                         const reader = new FileReader();
                         reader.onload = function(e) {
                             const contents = e.target.result;
@@ -1016,8 +1287,9 @@
                             createFlashcards(names);
                         };
                         
-                        reader.readAsText(file);
+                        reader.readAsText(nameFileInput.files[0]);
                     } else if (nameTextArea.value.trim()) {
+                        // Use textarea input
                         names = nameTextArea.value.split('\n')
                             .map(name => name.trim())
                             .filter(name => name.length > 0)
