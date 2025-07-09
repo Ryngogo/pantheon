@@ -775,7 +775,7 @@
             
             // Check for saved theme preference and set initial theme
             function initializeTheme() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
+                const savedTheme = localStorage.getItem('theme') || 'dark';
                 document.documentElement.setAttribute('data-theme', savedTheme);
                 updateThemeIcon(savedTheme);
             }
